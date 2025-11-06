@@ -1,0 +1,281 @@
+<meta name='viewport' content='width=device-width, initial-scale=1'/><!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Anuncios - Colegio de Secundaria</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+
+  <style>
+    @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;700&display=swap');
+    .font-inter { font-family: 'Inter', sans-serif; }
+
+    :root {
+      --color-primary: #16a34a;
+      --color-accent: #15803d;
+      --color-light: #dcfce7;
+    }
+
+    .school-background {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: #f0fdf4;
+      background-image:
+        radial-gradient(circle at 25% 25%, rgba(34, 197, 94, 0.1) 0%, transparent 55%),
+        radial-gradient(circle at 75% 75%, rgba(34, 197, 94, 0.1) 0%, transparent 55%);
+      z-index: -10;
+    }
+
+    .title-effect { text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); }
+
+    .announcement-card {
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .announcement-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+    }
+
+    .btn-primary {
+      background-color: var(--color-primary);
+      color: white;
+    }
+
+    .btn-primary:hover { background-color: var(--color-accent); }
+
+    @keyframes highlight {
+      0% { background-color: rgba(34, 197, 94, 0.3); }
+      100% { background-color: transparent; }
+    }
+
+    .new-announcement { animation: highlight 2s ease-out; }
+  </style>
+</head>
+<body class="font-inter">
+  <div id="app" class="min-h-screen relative">
+    <div class="school-background"></div>
+
+    <!-- Header -->
+    <header class="bg-white shadow-sm sticky top-0 z-40">
+      <div class="container mx-auto px-4 py-3 flex justify-between items-center">
+        <div class="flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-full bg-green-500 flex items-center justify-center text-white font-bold">
+            <i class="fas fa-graduation-cap"></i>
+          </div>
+          <div>
+            <h1 class="text-xl font-bold text-gray-800">Colegio Vicente Donoso Torrez</h1>
+            <p class="text-sm text-gray-600">Educación secundaria de calidad</p>
+          </div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Hero -->
+    <section class="py-10 text-center">
+      <h1 class="text-4xl md:text-5xl font-bold mb-4 text-gray-800 title-effect">
+        Tablón de Anuncios
+      </h1>
+      <p class="text-lg text-gray-600 mb-8">Publica o consulta los anuncios más recientes del colegio.</p>
+      <button id="toggleFormBtn" class="btn-primary py-3 px-8 rounded-full font-semibold transition transform hover:scale-105 shadow-lg">
+        <i class="fas fa-plus mr-2"></i>Agregar Nuevo Anuncio
+      </button>
+    </section>
+
+    <!-- Formulario oculto -->
+    <section id="formSection" class="hidden bg-white rounded-xl shadow-lg max-w-2xl mx-auto p-6 mb-10">
+      <h2 class="text-2xl font-bold mb-4 text-gray-800">Nuevo Anuncio</h2>
+      <form id="announcementForm" class="space-y-4">
+        <input type="text" id="title" placeholder="Título del anuncio" required class="w-full border border-gray-300 rounded-lg p-2">
+        <textarea id="content" placeholder="Contenido del anuncio" required class="w-full border border-gray-300 rounded-lg p-2"></textarea>
+        <select id="category" required class="w-full border border-gray-300 rounded-lg p-2">
+          <option value="">Seleccionar categoría</option>
+          <option>Académicos</option>
+          <option>Deportes</option>
+          <option>Culturales</option>
+          <option>Salud</option>
+          <option>Urgentes</option>
+        </select>
+        <button type="submit" class="btn-primary w-full py-2 rounded-lg font-semibold">Publicar</button>
+      </form>
+    </section>
+
+    <!-- Filtros -->
+    <section class="py-4 bg-white/80 backdrop-blur-sm">
+      <div class="container mx-auto flex flex-wrap justify-center gap-2">
+        <button class="filter-btn px-4 py-2 bg-green-600 text-white rounded-full text-sm font-medium" data-category="Todos">Todos</button>
+        <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium" data-category="Académicos">Académicos</button>
+        <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium" data-category="Deportes">Deportes</button>
+        <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium" data-category="Culturales">Culturales</button>
+        <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium" data-category="Salud">Salud</button>
+        <button class="filter-btn px-4 py-2 bg-gray-200 text-gray-700 rounded-full text-sm font-medium" data-category="Urgentes">Urgentes</button>
+      </div>
+    </section>
+
+    <!-- Tablón -->
+    <section class="py-10 px-4">
+      <div class="container mx-auto">
+        <div id="announcements-container" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8"></div>
+      </div>
+    </section>
+
+    <!-- === CALENDARIO DE ACTIVIDADES === -->
+    <section class="py-10 bg-white/80 backdrop-blur-sm">
+      <div class="container mx-auto text-center">
+        <h2 class="text-3xl font-bold mb-6 text-gray-800">Calendario de Actividades</h2>
+        <div id="calendar" class="max-w-3xl mx-auto bg-white rounded-xl shadow-lg p-6"></div>
+      </div>
+    </section>
+
+    <footer class="py-6 bg-white text-center border-t border-green-200">
+      <p class="text-gray-600">&copy; 2025 Colegio Vicente Donoso Torrez. Todos los derechos reservados.</p>
+    </footer>
+  </div>
+
+  <script>
+    // === Datos iniciales ===
+    let ANNOUNCEMENTS_DATA = [
+      { id: 1, title: "Inscripciones Abiertas", content: "Abiertas las inscripciones para talleres extracurriculares.", category: "Académicos", date: "2025-11-01", author: "Dirección", new: true },
+      { id: 2, title: "Campeonato de Fútbol", content: "Apoya a nuestro equipo este sábado en el colegio.", category: "Deportes", date: "2025-11-02", author: "Educación Física", new: true },
+      { id: 3, title: "Feria de Ciencias", content: "Entrega de proyectos hasta el 20 de noviembre.", category: "Académicos", date: "2025-11-03", author: "Ciencias", new: false }
+    ];
+
+    const container = document.getElementById("announcements-container");
+
+    function formatDate(dateString) {
+      const options = { year: "numeric", month: "long", day: "numeric" };
+      return new Date(dateString).toLocaleDateString("es-ES", options);
+    }
+
+    function getCategoryColor(category) {
+      const colors = {
+        "Académicos": "bg-blue-100 text-blue-800",
+        "Deportes": "bg-orange-100 text-orange-800",
+        "Culturales": "bg-purple-100 text-purple-800",
+        "Salud": "bg-red-100 text-red-800",
+        "Urgentes": "bg-red-200 text-red-900"
+      };
+      return colors[category] || "bg-gray-100 text-gray-800";
+    }
+
+    function renderAnnouncements(filter = "Todos") {
+      container.innerHTML = "";
+      const filtered = filter === "Todos" ? ANNOUNCEMENTS_DATA : ANNOUNCEMENTS_DATA.filter(a => a.category === filter);
+      if (filtered.length === 0) {
+        container.innerHTML = `<p class="text-center text-gray-500 col-span-full">No hay anuncios en esta categoría.</p>`;
+        return;
+      }
+
+      filtered.forEach(a => {
+        const card = document.createElement("div");
+        card.className = `announcement-card bg-white rounded-xl shadow-md overflow-hidden ${a.new ? 'new-announcement' : ''}`;
+        card.innerHTML = `
+          <div class="p-6">
+            <div class="flex justify-between items-start mb-4">
+              <span class="px-3 py-1 rounded-full text-xs font-medium ${getCategoryColor(a.category)}">${a.category}</span>
+            </div>
+            <h3 class="text-xl font-bold text-gray-800 mb-2">${a.title}</h3>
+            <p class="text-gray-600 mb-4">${a.content}</p>
+            <div class="flex justify-between items-center text-sm text-gray-500">
+              <div><i class="far fa-calendar mr-1"></i>${formatDate(a.date)}</div>
+              <div><i class="far fa-user mr-1"></i>${a.author}</div>
+            </div>
+          </div>
+          ${a.new ? `<div class="bg-green-500 text-white text-center py-1 text-xs font-medium">NUEVO</div>` : ""}
+        `;
+        container.appendChild(card);
+      });
+    }
+
+    // === Filtros ===
+    document.querySelectorAll(".filter-btn").forEach(btn => {
+      btn.addEventListener("click", () => {
+        document.querySelectorAll(".filter-btn").forEach(b => b.classList.remove("bg-green-600", "text-white"));
+        btn.classList.add("bg-green-600", "text-white");
+        renderAnnouncements(btn.dataset.category);
+      });
+    });
+
+    // === Mostrar/Ocultar formulario ===
+    const formSection = document.getElementById("formSection");
+    document.getElementById("toggleFormBtn").addEventListener("click", () => {
+      formSection.classList.toggle("hidden");
+    });
+
+    // === Agregar nuevo anuncio ===
+    document.getElementById("announcementForm").addEventListener("submit", e => {
+      e.preventDefault();
+      const title = document.getElementById("title").value;
+      const content = document.getElementById("content").value;
+      const category = document.getElementById("category").value;
+
+      const newAnnouncement = {
+        id: ANNOUNCEMENTS_DATA.length + 1,
+        title,
+        content,
+        category,
+        date: new Date().toISOString().split("T")[0],
+        author: "Administrador",
+        new: true
+      };
+
+      ANNOUNCEMENTS_DATA.unshift(newAnnouncement);
+      renderAnnouncements();
+      e.target.reset();
+      formSection.classList.add("hidden");
+      alert("✅ Anuncio agregado correctamente");
+    });
+
+    renderAnnouncements();
+
+    // === CALENDARIO DE ACTIVIDADES ===
+    const actividades = [
+      { fecha: "2025-11-05", titulo: "Ensayo de banda escolar" },
+      { fecha: "2025-11-10", titulo: "Examen de matemáticas" },
+      { fecha: "2025-11-15", titulo: "Día del deporte" },
+      { fecha: "2025-11-20", titulo: "Feria de Ciencias" },
+      { fecha: "2025-11-25", titulo: "Reunión de padres" }
+    ];
+
+    function renderCalendar() {
+      const calendar = document.getElementById("calendar");
+      const hoy = new Date();
+      const mes = hoy.toLocaleString("es-ES", { month: "long" });
+      const año = hoy.getFullYear();
+      let html = `
+        <h3 class="text-2xl font-bold mb-4 capitalize">${mes} ${año}</h3>
+        <div class="grid grid-cols-7 gap-2 text-sm font-semibold text-gray-600 mb-2">
+          <div>Lun</div><div>Mar</div><div>Mié</div><div>Jue</div><div>Vie</div><div>Sáb</div><div>Dom</div>
+        </div>
+      `;
+
+      const primerDia = new Date(año, hoy.getMonth(), 1);
+      const ultimoDia = new Date(año, hoy.getMonth() + 1, 0);
+      const offset = (primerDia.getDay() + 6) % 7; // Ajustar inicio (lunes)
+      html += `<div class="grid grid-cols-7 gap-2 text-center">`;
+
+      for (let i = 0; i < offset; i++) html += `<div></div>`;
+
+      for (let d = 1; d <= ultimoDia.getDate(); d++) {
+        const fecha = new Date(año, hoy.getMonth(), d).toISOString().split("T")[0];
+        const actividad = actividades.find(a => a.fecha === fecha);
+        html += `
+          <div class="p-2 rounded-lg border ${actividad ? 'bg-green-100 border-green-400' : 'bg-gray-50'}">
+            <div class="font-bold text-gray-800">${d}</div>
+            ${actividad ? `<div class="text-xs text-green-700 mt-1">${actividad.titulo}</div>` : ""}
+          </div>
+        `;
+      }
+
+      html += `</div>`;
+      calendar.innerHTML = html;
+    }
+
+    renderCalendar();
+  </script>
+</body>
+</html>
